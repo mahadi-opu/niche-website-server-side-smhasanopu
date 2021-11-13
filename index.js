@@ -21,13 +21,10 @@ app.use(cors());
 app.use(express.json());
 router.use(cors());
 
+// MongoDB
 
-
-
-// MongoD 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.h1bkr.mongodb.net/nashvilleDB?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uqwrr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-console.log(uri);
 
 async function verifyToken(req, res, next) {
     if (req.headers?.authorization?.startsWith('Bearer ')) {
@@ -47,21 +44,22 @@ async function verifyToken(req, res, next) {
 async function run() {
     try {
         await client.connect();
-        const database = client.db('nashvilleDB');
-        console.log(database);
+        const database = client.db('SyedBabyCare');
         const productCollection = database.collection('products');
+        const product2Collection = database.collection('products2');
         const reviewsCollection = database.collection('reviews');
         const ordersCollection = database.collection('orders');
+        const orders2Collection = database.collection('orders2');
         const usersCollection = database.collection('users');
         const blogsCollection = database.collection('blogs');
 
 
-        app.put('/updateStatus/:id', (req, res) => {
+        app.put('/updateStatus2/:id', (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) }
             const updatedStatus = req.body.status;
             console.log(updatedStatus);
-            const result = ordersCollection.updateOne(filter, {
+            const result = orders2Collection.updateOne(filter, {
                 $set: { status: updatedStatus },
             })
                 .then(result => {
@@ -69,35 +67,35 @@ async function run() {
                 })
         })
 
-        app.delete('/orders/:id', async (req, res) => {
+        app.delete('/orders2/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const result = await ordersCollection.deleteOne(query);
+            const result = await orders2Collection.deleteOne(query);
             console.log('Deleteing', id, query);
             res.json(result);
         })
         // GET Order API 
-        app.get('/orders', async (req, res) => {
-            const cursor = ordersCollection.find({});
-            const orders = await cursor.toArray();
-            res.json(orders);
+        app.get('/orders2', async (req, res) => {
+            const cursor = orders2Collection.find({});
+            const orders2 = await cursor.toArray();
+            res.json(orders2);
 
         })
         // GET Order API 
-        app.get('/myorders', async (req, res) => {
+        app.get('/myorders2', async (req, res) => {
             const email = req.query.email;
             const query = { email: email }
-            const cursor = ordersCollection.find(query);
-            const orders = await cursor.toArray();
-            res.send(orders);
+            const cursor = orders2Collection.find(query);
+            const orders2 = await cursor.toArray();
+            res.send(orders2);
 
         })
 
         // POST Order API 
-        app.post('/orders', async (req, res) => {
-            const orders = req.body;
-            console.log('hit', orders);
-            const result = await ordersCollection.insertOne(orders);
+        app.post('/orders2', async (req, res) => {
+            const orders2 = req.body;
+            console.log('hit', orders2);
+            const result = await orders2Collection.insertOne(orders2);
             console.log(result);
             res.json(result);
         });
@@ -155,32 +153,32 @@ async function run() {
         })
 
         // POST Products API 
-        app.post('/products', async (req, res) => {
-            const products = req.body;
-            console.log('hit', products);
-            const result = await productCollection.insertOne(products);
+        app.post('/products2', async (req, res) => {
+            const products2 = req.body;
+            console.log('hit', products2);
+            const result = await product2Collection.insertOne(products2);
             console.log(result);
             res.json(result);
         });
         // Delete API 
-        app.delete('/products/:id', async (req, res) => {
+        app.delete('/products2/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const result = await productCollection.deleteOne(query);
+            const result = await product2Collection.deleteOne(query);
             // console.log('Deleteing', id, result);
             res.json(result);
         })
         // GET Products API 
-        app.get('/products', async (req, res) => {
-            const cursor = productCollection.find({});
-            const products = await cursor.toArray();
-            res.send(products);
+        app.get('/products2', async (req, res) => {
+            const cursor = product2Collection.find({});
+            const products2 = await cursor.toArray();
+            res.send(products2);
         })
 
-        app.get('/productsforhome', async (req, res) => {
-            const cursor = productCollection.find({}).limit(6);
-            const products = await cursor.toArray();
-            res.send(products);
+        app.get('/productsHome2', async (req, res) => {
+            const cursor = product2Collection.find({}).limit(6);
+            const products2 = await cursor.toArray();
+            res.send(products2);
         });
         // POST reviews API 
         app.post('/reviews', async (req, res) => {
